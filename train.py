@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 from torch import nn, optim
 from dataset import SegmentationDataset
 from seg_model import SegMobileViT
+from losses import DiceLoss
 
 # 配置
 images_dir = 'Dataset/train/images'
@@ -28,7 +29,8 @@ model = SegMobileViT(backbone_name='mobilevit_xxs', num_classes=1, image_size=im
 model = model.to(device)
 
 # 损失和优化器
-criterion = nn.BCELoss()
+criterion_bce = nn.BCELoss()
+criterion_dice = DiceLoss()
 optimizer = optim.Adam(model.parameters(), lr=lr)
 
 best_loss = float('inf')
@@ -40,7 +42,9 @@ for epoch in range(1, epochs+1):
         masks = masks.to(device)
         optimizer.zero_grad()
         outputs = model(images)  # [B, 1, H, W]
-        loss = criterion(outputs, masks)
+        loss_bce = criterion_bce(outputs, masks)
+        loss_dice = criterion_dice(outputs, masks)
+        loss = 0.5 * loss_bce + 0.5 * loss_dice
         loss.backward()
         optimizer.step()
         running_loss += loss.item() * images.size(0)
