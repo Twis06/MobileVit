@@ -33,3 +33,4 @@ out = vit(img)
 ## Credits
 
 Code adapted from [MobileNetV2](https://github.com/tonylins/pytorch-mobilenet-v2) and [ViT](https://github.com/lucidrains/vit-pytorch).
+# MobileVit
