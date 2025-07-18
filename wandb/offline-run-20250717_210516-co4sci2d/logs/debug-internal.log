@@ -1,0 +1,13 @@
+{"time":"2025-07-17T21:05:16.429700746+08:00","level":"INFO","msg":"stream: starting","core version":"0.21.0"}
+{"time":"2025-07-17T21:05:16.532624475+08:00","level":"WARN","msg":"GraphQL client is nil, skipping feature loading"}
+{"time":"2025-07-17T21:05:16.532695907+08:00","level":"INFO","msg":"stream: created new stream","id":"co4sci2d"}
+{"time":"2025-07-17T21:05:16.532707247+08:00","level":"INFO","msg":"stream: started","id":"co4sci2d"}
+{"time":"2025-07-17T21:05:16.532719527+08:00","level":"INFO","msg":"writer: Do: started","stream_id":"co4sci2d"}
+{"time":"2025-07-17T21:05:16.532734517+08:00","level":"INFO","msg":"handler: started","stream_id":"co4sci2d"}
+{"time":"2025-07-17T21:05:16.532735683+08:00","level":"INFO","msg":"sender: started","stream_id":"co4sci2d"}
+{"time":"2025-07-17T21:05:16.532959712+08:00","level":"WARN","msg":"runupserter: server does not expand metric globs but the x_server_side_expand_glob_metrics setting is set; ignoring"}
+{"time":"2025-07-17T21:05:50.583644729+08:00","level":"INFO","msg":"stream: closing","id":"co4sci2d"}
+{"time":"2025-07-17T21:05:50.594684939+08:00","level":"INFO","msg":"handler: closed","stream_id":"co4sci2d"}
+{"time":"2025-07-17T21:05:50.594701663+08:00","level":"INFO","msg":"writer: Close: closed","stream_id":"co4sci2d"}
+{"time":"2025-07-17T21:05:50.594711221+08:00","level":"INFO","msg":"sender: closed","stream_id":"co4sci2d"}
+{"time":"2025-07-17T21:05:50.59552719+08:00","level":"INFO","msg":"stream: closed","id":"co4sci2d"}

@@ -4,38 +4,38 @@ import torch
 from torch.utils.data import Dataset
 import torchvision.transforms as T
 import numpy as np
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 class SegmentationDataset(Dataset):
-    def __init__(self, images_dir, masks_dir, image_size=(256, 256), transform=None):
+    def __init__(self, images_dir, masks_dir, image_size=(256, 256), is_train=True):
         self.images_dir = images_dir
         self.masks_dir = masks_dir
         self.image_size = image_size
-        self.transform = transform
         self.images = sorted([f for f in os.listdir(images_dir) if f.endswith(('.png', '.jpg', '.jpeg'))])
+        if is_train:
+            self.aug = A.Compose([
+                A.HorizontalFlip(p=0.5),
+                A.VerticalFlip(p=0.5),
+                A.RandomRotate90(p=0.5),
+                # 你可以加更多增强
+                A.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5)),
+                ToTensorV2()
+            ])
+        else:
+            self.aug = A.Compose([
+                A.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5)),
+                ToTensorV2()
+            ])
     def __len__(self):
         return len(self.images)
     def __getitem__(self, idx):
         img_name = self.images[idx]
         img_path = os.path.join(self.images_dir, img_name)
         mask_path = os.path.join(self.masks_dir, img_name)
-        image = Image.open(img_path).convert('RGB')
-        mask = Image.open(mask_path).convert('L')
-        image = image.resize(self.image_size, Image.BILINEAR)
-        mask = mask.resize(self.image_size, Image.NEAREST)
-        # 数据增强
-        if self.transform:
-            image = self.transform(image)
-        else:
-            aug = T.Compose([
-                T.RandomHorizontalFlip(),
-                T.RandomVerticalFlip(),
-                T.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
-            ])
-            seed = np.random.randint(2147483647)
-            torch.manual_seed(seed)
-            image = aug(image)
-            image = T.ToTensor()(image)
-            image = T.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])(image)
-        mask = T.ToTensor()(mask)
-        mask = (mask > 0.5).float()  # 保证为0/1
+        image = np.array(Image.open(img_path).convert('RGB').resize(self.image_size, Image.BILINEAR))
+        mask = np.array(Image.open(mask_path).convert('L').resize(self.image_size, Image.NEAREST))
+        augmented = self.aug(image=image, mask=mask)
+        image = augmented['image']
+        mask = (augmented['mask'] > 0.5).float().unsqueeze(0)  # [1, H, W]
         return image, mask 

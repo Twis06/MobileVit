@@ -4,7 +4,7 @@ import torchvision.transforms as T
 import numpy as np
 import sys
 import os
-from seg_model import SegMobileViT
+from seg_model import SegMobileViT_DeepLabV3
 
 # 用法: python predict.py input.jpg best_model.pth output_mask.png
 import argparse
@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('image_path', type=str, help='输入图片路径')
 parser.add_argument('model_path', type=str, help='模型权重路径')
 parser.add_argument('output_path', type=str, help='输出mask路径')
-parser.add_argument('--backbone', type=str, default='mobilevit_xxs')
+parser.add_argument('--backbone', type=str, default='mobilevit_xs')
 parser.add_argument('--image_size', type=int, nargs=2, default=[256, 256])
 parser.add_argument('--threshold', type=float, default=0.5)
 args = parser.parse_args()
@@ -21,7 +21,7 @@ args = parser.parse_args()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # 加载模型
-model = SegMobileViT(backbone_name=args.backbone, num_classes=1, image_size=tuple(args.image_size))
+model = SegMobileViT_DeepLabV3(backbone_name=args.backbone, num_classes=1, image_size=tuple(args.image_size))
 model.load_state_dict(torch.load(args.model_path, map_location=device))
 model = model.to(device)
 model.eval()
@@ -40,7 +40,7 @@ input_tensor = transform(image).unsqueeze(0).to(device)
 # 推理
 with torch.no_grad():
     output = model(input_tensor)
-    mask = output.squeeze().cpu().numpy()
+    mask = torch.sigmoid(output).squeeze().cpu().numpy()
     mask = (mask > args.threshold).astype(np.uint8) * 255
 
 # 保存mask
